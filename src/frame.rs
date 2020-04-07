@@ -14,10 +14,7 @@ pub struct DynamicFrame {
     cause: u8,
     measurement_point: u8,
     record_address: u16,
-    first_integrated: u8,
-    last_integrated: u8,
-    start_time: TimeLabel,
-    end_time: TimeLabel,
+    data: Vec<u8>,
 }
 
 pub struct StaticFrame {
@@ -71,10 +68,6 @@ impl DynamicFrame {
     pub fn set_infobj(&self, addr: u8, totals: u32, qb: u8, time: TimeLabel) {
 
     }
-
-    pub fn time_start(&self) -> TimeLabel {
-        self.start_time
-    }
 }
 
 impl From<[u8; MAX_FRAME]> for DynamicFrame {
@@ -82,7 +75,7 @@ impl From<[u8; MAX_FRAME]> for DynamicFrame {
         assert_eq!(bin[0], START_FRAME_BYTE);
 
         assert_eq!(bin[1], bin[2]);
-        let length = bin[1];
+        let length: usize = bin[1] as usize;
 
         assert_eq!(bin[3], START_FRAME_BYTE);
         let control = bin[4];
@@ -99,19 +92,14 @@ impl From<[u8; MAX_FRAME]> for DynamicFrame {
             ((bin[12] as u16) << 8) +
             bin[11] as u16;
 
-        let first_integrated = bin[13];
-        let last_integrated = bin[14];
+        // Save variable data
+        let mut data: Vec<u8> = Vec::new();
+        for i in 13..length+4 {
+            data.push(bin[i]);
+        }
 
-        let start_time = TimeLabelA::from(
-            [bin[15], bin[16], bin[17], bin[18], bin[19]]
-        );
-
-        let end_time = TimeLabelA::from(
-            [bin[20], bin[21], bin[22], bin[23], bin[24]]
-        );
-
-        let checksum = bin[25];
-        assert_eq!(bin[26], END_BYTE);
+        let checksum = bin[length + 4];
+        assert_eq!(bin[length + 5], END_BYTE);
 
         DynamicFrame {
             control,
@@ -121,10 +109,7 @@ impl From<[u8; MAX_FRAME]> for DynamicFrame {
             cause,
             measurement_point,
             record_address,
-            first_integrated,
-            last_integrated,
-            start_time: TimeLabel::A(start_time),
-            end_time: TimeLabel::A(end_time),
+            data,
         }
     }
 }

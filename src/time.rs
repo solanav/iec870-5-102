@@ -21,42 +21,54 @@ impl fmt::Display for TimeLabel {
 #[derive(Debug, Copy, Clone)]
 pub struct TimeLabelA {
     minute: u8,
-    TIS: u8, // tariff info
-    IV: u8, // valid
+    tis: u8, // tariff info
+    iv: u8, // valid
     hour: u8,
-    RES1: u8, // reserve 1
-    SU: u8, // summer time
+    res1: u8, // reserve 1
+    su: u8, // summer time
     month_day: u8,
     week_day: u8,
     month: u8,
-    ETI: u8, // energy tariff
-    PTI: u8, // power tariff
+    eti: u8, // energy tariff
+    pti: u8, // power tariff
     year: u8,
-    RES2: u8, // reserve 2
+    res2: u8, // reserve 2
 }
 
 impl From<[u8; 5]> for TimeLabelA {
     fn from(bin: [u8; 5]) -> Self {
         let minute = bin[0] & 0b00111111;
-        let hour = bin[1] & 0b00011111;
+        let tis    = bin[0] & 0b01000000;
+        let iv     = bin[0] & 0b10000000;
+
+        let hour= bin[1] & 0b00011111;
+        let res1= bin[1] & 0b01100000;
+        let su  = bin[1] & 0b10000000;
+
         let month_day = bin[2] & 0b00011111;
+        let week_day  = bin[2] & 0b11100000;
+
         let month = bin[3] & 0b00001111;
+        let eti   = bin[3] & 0b00110000;
+        let pti   = bin[3] & 0b11000000;
+
         let year = bin[4] & 0b01111111;
+        let res2 = bin[4] & 0b10000000;
 
         TimeLabelA {
             minute,
-            TIS: 0,
-            IV: 0,
+            tis,
+            iv,
             hour,
-            RES1: 0,
-            SU: 0,
+            res1,
+            su,
             month_day,
-            week_day: 0,
+            week_day,
             month,
-            ETI: 0,
-            PTI: 0,
+            eti,
+            pti,
             year,
-            RES2: 0
+            res2,
         }
     }
 }
@@ -89,18 +101,18 @@ impl fmt::Display for TimeLabelA {
 #[derive(Debug, Copy, Clone)]
 pub struct TimeLabelB {
     minute: u8,
-    TIS: u8, // tariff info
-    IV: u8, // valid
+    tis: u8, // tariff info
+    iv: u8, // valid
     hour: u8,
-    RES1: u8, // reserve 1
-    SU: u8, // summer time
+    res1: u8, // reserve 1
+    su: u8, // summer time
     month_day: u8,
     week_day: u8,
     month: u8,
-    ETI: u8, // energy tariff
-    PTI: u8, // power tariff
+    eti: u8, // energy tariff
+    pti: u8, // power tariff
     year: u8,
-    RES2: u8, // reserve 2
+    res2: u8, // reserve 2
     seconds: u8,
     milliseconds: u8,
 }

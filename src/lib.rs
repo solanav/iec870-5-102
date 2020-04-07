@@ -9,7 +9,7 @@ mod tests {
     use crate::frame::{MAX_FRAME, DynamicFrame};
 
     #[test]
-    fn asdu_122() {
+    fn generic() {
         // Create the bin and the data
         let mut bin= [0u8; MAX_FRAME];
         let data = [
@@ -23,11 +23,13 @@ mod tests {
         ];
 
         // Copy data to binary load
-        for i in 0..data.len() { bin[i] = data[i]; }
+        for i in 0..data.len() {
+            bin[i] = data[i];
+        }
 
         // Try to deserialize the bin
         let df = DynamicFrame::from(bin);
 
-        println!("{}", df.time_start());
+        println!("{:?}", df);
     }
 }
