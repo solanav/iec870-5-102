@@ -28,6 +28,6 @@ mod tests {
         // Try to deserialize the bin
         let df = DynamicFrame::from(bin);
 
-        println!("{:?}", df);
+        println!("{}", df.time_start());
     }
 }

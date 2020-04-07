@@ -1,4 +1,5 @@
-use crate::time::TimeLabel;
+use crate::time::{TimeLabel, TimeLabelA};
+use chrono::DateTime;
 
 pub const MAX_FRAME: usize = 255;
 const START_FRAME_BYTE: u8 = 0x68;
@@ -15,8 +16,8 @@ pub struct DynamicFrame {
     record_address: u16,
     first_integrated: u8,
     last_integrated: u8,
-    start_time: u64,
-    end_time: u64,
+    start_time: TimeLabel,
+    end_time: TimeLabel,
 }
 
 pub struct StaticFrame {
@@ -25,23 +26,6 @@ pub struct StaticFrame {
 }
 
 impl DynamicFrame {
-    /// Initializes the structure with all values equal to zero
-    pub fn new() -> Self{
-        DynamicFrame {
-            control: 0,
-            em_address: 0,
-            asdu_type_id: 0,
-            number_obj: 0,
-            cause: 0,
-            measurement_point: 0,
-            record_address: 0,
-            first_integrated: 0,
-            last_integrated: 0,
-            start_time: 0,
-            end_time: 0,
-        }
-    }
-
     /// Control
     /// {1 bit} ~ Reserve: Always 0
     /// {1 bit} PRM: 0 means its from slave, 1 means its from master
@@ -54,13 +38,13 @@ impl DynamicFrame {
     ///     3  - user data, FCV = 1
     ///     9  - link state request, FCV = 0
     ///     11 - class 2 data request, FCV = 1
-    pub fn set_control(self, prm: u8, fcb: u8, fcv: u8, dfc: u8) {
+    pub fn set_control(&self, prm: u8, fcb: u8, fcv: u8, dfc: u8) {
 
     }
 
     /// Address
     /// Address from 0x0000 to 0xFFFF unique to the energy meter
-    pub fn set_address(self, addr: u16) {
+    pub fn set_address(&self, addr: u16) {
 
     }
 
@@ -73,7 +57,7 @@ impl DynamicFrame {
     ///     {7}   - test (0 is no test, 1 is test)
     /// {16 bit} mp_addr: 2 bytes of the measurment point address
     /// {8 bit} r_addr: 1 byte of the record address
-    pub fn set_dui(self, type_id: u8, vsq: u8, cause: u8, mp_addr: u16, r_addr: u8) {
+    pub fn set_dui(&self, type_id: u8, vsq: u8, cause: u8, mp_addr: u16, r_addr: u8) {
         if cause >= 128 {
             panic!("Error creating dynamic frame. Cause field's value has to be [0, 127]");
         }
@@ -84,8 +68,12 @@ impl DynamicFrame {
     /// {32 bit} totals: 32 bit number representing energy
     /// {8 bit} qb: qualifier byte for the totals
     /// {x bit} time: time label
-    pub fn set_infobj(self, addr: u8, totals: u32, qb: u8, time: TimeLabel) {
+    pub fn set_infobj(&self, addr: u8, totals: u32, qb: u8, time: TimeLabel) {
 
+    }
+
+    pub fn time_start(&self) -> TimeLabel {
+        self.start_time
     }
 }
 
@@ -114,19 +102,13 @@ impl From<[u8; MAX_FRAME]> for DynamicFrame {
         let first_integrated = bin[13];
         let last_integrated = bin[14];
 
-        let start_time =
-            ((bin[19] as u64) << 32) +
-            ((bin[18] as u64) << 24) +
-            ((bin[17] as u64) << 16) +
-            ((bin[16] as u64) << 8) +
-            bin[15] as u64;
+        let start_time = TimeLabelA::from(
+            [bin[15], bin[16], bin[17], bin[18], bin[19]]
+        );
 
-        let end_time =
-            ((bin[24] as u64) << 32) +
-            ((bin[23] as u64) << 24) +
-            ((bin[22] as u64) << 16) +
-            ((bin[21] as u64) << 8) +
-            bin[20] as u64;
+        let end_time = TimeLabelA::from(
+            [bin[20], bin[21], bin[22], bin[23], bin[24]]
+        );
 
         let checksum = bin[25];
         assert_eq!(bin[26], END_BYTE);
@@ -141,8 +123,8 @@ impl From<[u8; MAX_FRAME]> for DynamicFrame {
             record_address,
             first_integrated,
             last_integrated,
-            start_time,
-            end_time
+            start_time: TimeLabel::A(start_time),
+            end_time: TimeLabel::A(end_time),
         }
     }
 }
