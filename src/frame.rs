@@ -98,7 +98,15 @@ impl From<[u8; MAX_FRAME]> for DynamicFrame {
             data.push(bin[i]);
         }
 
+        // Check the checksum
         let checksum = bin[length + 4];
+        let mut checksum_local: i32 = 0;
+        for i in 4..length+4 {
+            checksum_local += bin[i] as i32;
+        }
+        checksum_local = checksum_local % 256;
+        assert_eq!(checksum as i32, checksum_local);
+
         assert_eq!(bin[length + 5], END_BYTE);
 
         DynamicFrame {
