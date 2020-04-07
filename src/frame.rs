@@ -1,5 +1,7 @@
 use crate::time::TimeLabel;
 
+const MAX_FRAME: usize = 255;
+
 pub struct DynamicFrame {
     control: u8,
     address: u16,
