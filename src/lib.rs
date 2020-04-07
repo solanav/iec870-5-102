@@ -4,6 +4,9 @@ mod frame;
 /// Time labels used in frames
 mod time;
 
+/// Types as defined on the protocol
+mod types;
+
 #[cfg(test)]
 mod tests {
     use crate::frame::{MAX_FRAME, DynamicFrame};
