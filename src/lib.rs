@@ -7,9 +7,6 @@ mod time;
 /// Types as defined on the protocol
 mod types;
 
-/// Utils used for serialization and deserialization
-mod bin_utils;
-
 #[cfg(test)]
 mod tests {
     use crate::frame::{MAX_FRAME, DynamicFrame};
@@ -71,11 +68,9 @@ mod tests {
 
         // Try to deserialize the bin
         let df = DynamicFrame::from(bin);
-        println!("008 > {:?}", df.data());
-
         let parsed = M_IT_TG_2::from_bin(df.data(), df.n());
-
         let serialized = parsed.into_bin();
-        println!("008 > {:?}", serialized);
+
+        assert_eq!(serialized, df.data());
     }
 }

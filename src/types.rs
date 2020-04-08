@@ -1,5 +1,4 @@
 use crate::time::{TimeLabel, TimeLabelA};
-use crate::bin_utils::u64_to_bin;
 
 pub enum ImplementedTypes {
     MITTG2(M_IT_TG_2),
@@ -20,12 +19,14 @@ impl M_IT_TG_2 {
         for i in 0..n {
             let offset = i * 6;
             let a = bin[offset];
-            let t =
-                ((bin[offset + 5] as u64) << 32) +
-                ((bin[offset + 4] as u64) << 24) +
-                ((bin[offset + 3] as u64) << 16) +
-                ((bin[offset + 2] as u64) << 8) +
-                bin[offset + 1] as u64;
+            let t = u64::from_le_bytes([
+                bin[offset+1],
+                bin[offset+2],
+                bin[offset+3],
+                bin[offset+4],
+                bin[offset+5],
+                0, 0, 0
+            ]);
 
             addr_obj.push(a);
             total.push(t);
@@ -36,7 +37,7 @@ impl M_IT_TG_2 {
         M_IT_TG_2 {
             addr_obj,
             total,
-            time: TimeLabel::A(TimeLabelA::from([
+            time: TimeLabel::A(TimeLabelA::from_be_bytes([
                 bin[time_offset],
                 bin[time_offset+1],
                 bin[time_offset+2],
@@ -54,7 +55,7 @@ impl M_IT_TG_2 {
             bin.push(self.addr_obj[i]);
 
             // Serialize totals (u64)
-            let total_array: [u8; 8] = u64_to_bin(self.total[i]);
+            let total_array: [u8; 8] = self.total[i].to_be_bytes();
             let mut total_array = total_array.split_at(3).1.to_vec();
             total_array.reverse();
 

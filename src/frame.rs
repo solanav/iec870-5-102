@@ -86,9 +86,7 @@ impl From<[u8; MAX_FRAME]> for DynamicFrame {
 
         assert_eq!(bin[3], START_FRAME_BYTE);
         let control = bin[4];
-        let em_address =
-            ((bin[6] as u16) << 8) +
-            bin[5] as u16;
+        let em_address = u16::from_le_bytes([bin[5], bin[6]]);
         let asdu_type_id = bin[7];
 
         assert!(bin[8] < 128);

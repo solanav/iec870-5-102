@@ -34,8 +34,8 @@ pub struct TimeLabelA {
     res2: u8, // reserve 2
 }
 
-impl From<[u8; 5]> for TimeLabelA {
-    fn from(bin: [u8; 5]) -> Self {
+impl TimeLabelA {
+    pub fn from_be_bytes(bin: [u8; 5]) -> Self {
         let minute = bin[0] & 0b00111111;
         let tis    = bin[0] & 0b01000000;
         let iv     = bin[0] & 0b10000000;
