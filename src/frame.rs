@@ -16,6 +16,15 @@ pub struct DynamicFrame {
     data: Vec<u8>,
 }
 
+pub fn get_checksum(data: Vec<u8>) -> i32 {
+    let mut checksum: i32 = 0;
+    for i in 0..data.len() {
+        checksum += data[i] as i32;
+    }
+
+    checksum % 256
+}
+
 pub struct StaticFrame {
     control: u8,
     address: u16,
@@ -103,14 +112,10 @@ impl From<[u8; MAX_FRAME]> for DynamicFrame {
             data.push(bin[i]);
         }
 
-        // Check the checksum
+        // Calculate the checksum
         let checksum = bin[length + 4];
-        let mut checksum_local: i32 = 0;
-        for i in 4..length+4 {
-            checksum_local += bin[i] as i32;
-        }
-        checksum_local = checksum_local % 256;
-        assert_eq!(checksum as i32, checksum_local);
+        let checksum_bin = (&bin[4..length+4]).to_vec();
+        assert_eq!(checksum as i32, get_checksum(checksum_bin));
 
         assert_eq!(bin[length + 5], END_BYTE);
 
