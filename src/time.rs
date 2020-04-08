@@ -1,7 +1,6 @@
 use chrono::{DateTime, Utc, NaiveDate};
-use std::str::FromStr;
 use std::fmt;
-use std::fmt::{Formatter, Error};
+use std::fmt::Formatter;
 
 #[derive(Debug, Copy, Clone)]
 pub enum TimeLabel {

@@ -1,5 +1,4 @@
-use crate::time::{TimeLabel, TimeLabelA};
-use chrono::DateTime;
+use crate::time::TimeLabel;
 
 pub const MAX_FRAME: usize = 255;
 const START_FRAME_BYTE: u8 = 0x68;
@@ -10,7 +9,7 @@ pub struct DynamicFrame {
     control: u8,
     em_address: u16,
     asdu_type_id: u8,
-    number_obj: u8,
+    number_obj: usize,
     cause: u8,
     measurement_point: u8,
     record_address: u16,
@@ -68,6 +67,14 @@ impl DynamicFrame {
     pub fn set_infobj(&self, addr: u8, totals: u32, qb: u8, time: TimeLabel) {
 
     }
+
+    pub fn data(&self) -> Vec<u8> {
+        self.data.clone()
+    }
+
+    pub fn n(&self) -> usize {
+        self.number_obj
+    }
 }
 
 impl From<[u8; MAX_FRAME]> for DynamicFrame {
@@ -85,7 +92,7 @@ impl From<[u8; MAX_FRAME]> for DynamicFrame {
         let asdu_type_id = bin[7];
 
         assert!(bin[8] < 128);
-        let number_obj = bin[8];
+        let number_obj = bin[8] as usize;
         let cause = bin[9];
         let measurement_point = bin[10];
         let record_address =
