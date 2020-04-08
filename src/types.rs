@@ -1,7 +1,22 @@
 use crate::time::{TimeLabel, TimeLabelA};
+use crate::frame::DynamicFrame;
+use crate::types::ImplementedTypes::MITTG2;
 
 pub enum ImplementedTypes {
     MITTG2(M_IT_TG_2),
+}
+
+pub fn parse_data(type_id: u8, data: DynamicFrame) -> ImplementedTypes
+{
+    match type_id {
+        8 => MITTG2(M_IT_TG_2::from_bin(data.data(), data.n())),
+        _ => panic!("Message not known"),
+    }
+}
+
+pub trait Message {
+    fn from_bin(bin: Vec<u8>, n: usize) -> Self;
+    fn into_bin(self) -> Vec<u8>;
 }
 
 #[allow(non_camel_case_types)]
@@ -12,8 +27,8 @@ pub struct M_IT_TG_2 {
     time: TimeLabel,
 }
 
-impl M_IT_TG_2 {
-    pub fn from_bin(bin: Vec<u8>, n: usize) -> Self {
+impl Message for M_IT_TG_2 {
+    fn from_bin(bin: Vec<u8>, n: usize) -> Self {
         let mut addr_obj = Vec::new();
         let mut total = Vec::new();
         for i in 0..n {
@@ -47,7 +62,7 @@ impl M_IT_TG_2 {
         }
     }
 
-    pub fn into_bin(self) -> Vec<u8> {
+    fn into_bin(self) -> Vec<u8> {
         let mut bin = Vec::new();
 
         for i in 0..self.total.len() {

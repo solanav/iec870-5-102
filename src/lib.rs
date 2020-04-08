@@ -10,7 +10,7 @@ mod types;
 #[cfg(test)]
 mod tests {
     use crate::frame::{MAX_FRAME, DynamicFrame};
-    use crate::types::M_IT_TG_2;
+    use crate::types::{M_IT_TG_2, Message};
 
     #[test]
     fn asdu_8() {
