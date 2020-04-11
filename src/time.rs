@@ -8,6 +8,12 @@ pub enum TimeLabel {
     B(TimeLabelB),
 }
 
+impl Default for TimeLabel {
+    fn default() -> Self {
+        TimeLabel::A(TimeLabelA::default())
+    }
+}
+
 impl fmt::Display for TimeLabel {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
@@ -17,7 +23,7 @@ impl fmt::Display for TimeLabel {
     }
 }
 
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, Default)]
 pub struct TimeLabelA {
     minute: u8,
     tis: u8, // tariff info
@@ -97,7 +103,7 @@ impl fmt::Display for TimeLabelA {
     }
 }
 
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, Default)]
 pub struct TimeLabelB {
     minute: u8,
     tis: u8, // tariff info

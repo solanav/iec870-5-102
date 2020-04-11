@@ -1,0 +1,57 @@
+{
+  "data": [
+    {
+      "name": "M_IT_TG_2",
+      "fields": [
+        {
+          "name": "addr_obj",
+          "type": "u8",
+          "bits": 8
+        },
+        {
+          "name": "total",
+          "type": "u64",
+          "bits": 40
+        }
+      ],
+      "others": [
+        {
+          "name": "time",
+          "vector": false,
+          "type": "TimeLabel",
+          "bits": 40
+        }
+      ]
+    },
+    {
+      "name": "C_CI_NT_2",
+      "fields": [],
+      "others": [
+        {
+          "name": "first_integrated",
+          "vector": false,
+          "type": "u8",
+          "bits": 8
+        },
+        {
+          "name": "last_integrated",
+          "vector": false,
+          "type": "u8",
+          "bits": 8
+        },
+        {
+          "name": "start_time",
+          "vector": false,
+          "type": "TimeLabel",
+          "bits": 40
+        },
+        {
+          "name": "end_time",
+          "vector": false,
+          "type": "TimeLabel",
+          "bits": 40
+        }
+      ]
+    }
+  ]
+}
